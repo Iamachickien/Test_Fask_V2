@@ -4,6 +4,7 @@ from flask_bcrypt import Bcrypt
 from datetime import datetime
 import pytz
 import os
+from sqlalchemy import inspect
 
 # Cấu hình múi giờ Việt Nam
 vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
@@ -34,7 +35,8 @@ class User(db.Model):
 
 # Tạo database và tài khoản admin mặc định
 with app.app_context():
-    if not db.engine.has_table('history'):
+    inspector = inspect(db.engine)
+    if not inspector.has_table('history'):
         db.create_all()
     if not User.query.filter_by(username='admin').first():
         hashed_password = bcrypt.generate_password_hash('12345678').decode('utf-8')
