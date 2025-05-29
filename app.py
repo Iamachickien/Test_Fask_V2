@@ -41,13 +41,16 @@ with app.app_context():
         inspector = inspect(db.engine)
         if not inspector.has_table('history'):
             db.create_all()
+            print("Tạo bảng database thành công")
         if not User.query.filter_by(username='admin').first():
             hashed_password = bcrypt.generate_password_hash('12345678').decode('utf-8')
             admin = User(username='admin', password=hashed_password, role='admin')
             db.session.add(admin)
             db.session.commit()
+            print("Tạo tài khoản admin thành công")
     except Exception as e:
-        print(f"Error initializing database: {e}")
+        print(f"Lỗi khởi tạo database: {str(e)}")
+        raise
 
 led_status = "OFF"
 esp_status = "Hello"
