@@ -34,7 +34,8 @@ class User(db.Model):
 
 # Tạo database và tài khoản admin mặc định
 with app.app_context():
-    db.create_all()
+    if not db.engine.has_table('history'):
+        db.create_all()
     if not User.query.filter_by(username='admin').first():
         hashed_password = bcrypt.generate_password_hash('12345678').decode('utf-8')
         admin = User(username='admin', password=hashed_password, role='admin')
@@ -174,6 +175,3 @@ def manage_users():
     
     users = User.query.all()
     return render_template("manage_users.html", users=users)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
