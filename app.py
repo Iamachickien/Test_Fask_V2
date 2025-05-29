@@ -11,7 +11,9 @@ vietnam_tz = pytz.timezone('Asia/Ho_Chi_Minh')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
-database_url = os.getenv('DATABASE_URL', 'postgresql://user:password@db:5432/esp32_db')
+database_url = os.getenv('DATABASE_URL')
+if not database_url:
+    raise ValueError("DATABASE_URL environment variable is not set")
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql+psycopg2://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
@@ -35,14 +37,17 @@ class User(db.Model):
 
 # Tạo database và tài khoản admin mặc định
 with app.app_context():
-    inspector = inspect(db.engine)
-    if not inspector.has_table('history'):
-        db.create_all()
-    if not User.query.filter_by(username='admin').first():
-        hashed_password = bcrypt.generate_password_hash('12345678').decode('utf-8')
-        admin = User(username='admin', password=hashed_password, role='admin')
-        db.session.add(admin)
-        db.session.commit()
+    try:
+        inspector = inspect(db.engine)
+        if not inspector.has_table('history'):
+            db.create_all()
+        if not User.query.filter_by(username='admin').first():
+            hashed_password = bcrypt.generate_password_hash('12345678').decode('utf-8')
+            admin = User(username='admin', password=hashed_password, role='admin')
+            db.session.add(admin)
+            db.session.commit()
+    except Exception as e:
+        print(f"Error initializing database: {e}")
 
 led_status = "OFF"
 esp_status = "Hello"
