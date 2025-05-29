@@ -1,0 +1,28 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=your_secret_key
+      - DATABASE_URL=postgresql://user:password@db:5432/esp32_db
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    command: >
+        sh -c "gunicorn --bind 0.0.0.0:5000 --timeout 120 app:app"
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=esp32_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

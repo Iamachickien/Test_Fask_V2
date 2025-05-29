@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý tài khoản</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Quản lý tài khoản</h1>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="notification is-{{ 'success' if category == 'success' else 'danger' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Form thêm tài khoản -->
+            <h2 class="subtitle">Thêm tài khoản mới</h2>
+            <form method="POST" action="{{ url_for('manage_users') }}">
+                <input type="hidden" name="action" value="add">
+                <div class="field">
+                    <label class="label">Tên đăng nhập</label>
+                    <div class="control">
+                        <input class="input" type="text" name="username" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Mật khẩu</label>
+                    <div class="control">
+                        <input class="input" type="password" name="password" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Thêm tài khoản</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Danh sách tài khoản -->
+            <h2 class="subtitle">Danh sách tài khoản</h2>
+            <table class="table is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Tên đăng nhập</th>
+                        <th>Vai trò</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('manage_users') }}" style="display:inline;">
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <input class="input is-small" type="password" name="new_password" placeholder="Mật khẩu mới" required>
+                                <button class="button is-small is-warning" type="submit">Cập nhật</button>
+                            </form>
+                            {% if user.role != 'admin' %}
+                            <form method="POST" action="{{ url_for('manage_users') }}" style="display:inline;">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <button class="button is-small is-danger" type="submit">Xóa</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{{ url_for('index') }}" class="button is-primary">Quay lại</a>
+        </div>
+    </section>
+</body>
+</html>

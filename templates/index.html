@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>SMART LOCK SYSTEM</title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  </head>
+  <body>
+      <section class="section">
+          <div class="container">
+              <h1 class="title">SMART LOCK SYSTEM</h1>
+              <p class="subtitle">Trạng thái hiện tại: <strong>{{ status }}</strong></p>
+              <div class="buttons">
+                  <button class="button is-primary" onclick="sendCommand('ON')">Mở cửa</button>
+                  <button class="button is-danger" onclick="sendCommand('OFF')">Khóa cửa</button>
+                  <a href="{{ url_for('view_history') }}" class="button is-info">Xem lịch sử</a>
+                  <a href="{{ url_for('change_password') }}" class="button is-warning">Đổi mật khẩu</a>
+                  {% if session.username %}
+                      {% set user = User.query.filter_by(username=session.username).first() %}
+                      {% if user and user.role == 'admin' %}
+                          <a href="{{ url_for('manage_users') }}" class="button is-success">Quản lý tài khoản</a>
+                      {% endif %}
+                  {% endif %}
+                  <a href="{{ url_for('logout') }}" class="button is-light">Đăng xuất</a>
+              </div>
+          </div>
+      </section>
+      <script>
+          function sendCommand(cmd) {
+              fetch('/set-command/' + cmd)
+                  .then(response => response.text())
+                  .then(data => alert(data))
+                  .catch(error => console.error('Error:', error));
+          }
+      </script>
+  </body>
+  </html>

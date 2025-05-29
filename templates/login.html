@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Đăng nhập</title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  </head>
+  <body>
+      <section class="section">
+          <div class="container">
+              <h1 class="title">Đăng nhập</h1>
+              {% if error %}
+                  <div class="notification is-danger">
+                      {{ error }}
+                  </div>
+              {% endif %}
+              <form method="POST" action="{{ url_for('login') }}">
+                  <div class="field">
+                      <label class="label">Tên đăng nhập</label>
+                      <div class="control">
+                          <input class="input" type="text" name="username" required>
+                      </div>
+                  </div>
+                  <div class="field">
+                      <label class="label">Mật khẩu</label>
+                      <div class="control">
+                          <input class="input" type="password" name="password" required>
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="control">
+                          <button class="button is-primary" type="submit">Đăng nhập</button>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </section>
+  </body>
+  </html>
